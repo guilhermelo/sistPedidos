@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <h:head>
+    
+    </h:head>
+    
+    <h:body>
+    
+    	<div class="ui-g-12">
+    		<h:form>
+	    		<p:menubar style="margin-top: 0px;" orientation="horizontal">
+			    	<p:submenu label="Cadastros" icon="ui-icon-user">
+			    		<p:menuitem action="cliente">Clientes</p:menuitem>
+			    	</p:submenu>
+	    		</p:menubar>
+    		</h:form>
+    	</div>
+    	<div class="ui-g-12">
+    		<h3>Cadastro de Mesas</h3>
+    	</div>
+		<div class="ui-g-10">    	
+		    <h:form id="formMesa">
+		    	<p:growl id="message" showDetail="true" />
+		    	<div class="ui-g">
+			   		<div class="ui-g-1">
+			   			<p:outputLabel value="Nome: " for="nome"/>
+			   		</div>
+			   		<div class="ui-g-3">
+			    		<p:inputText id="nome" value="#{mesaBean.mesa.nome}" maxlength="40"/>
+			   		</div>	
+		    	</div>
+			   	    	
+			   	<div class="ui-g">
+			    	<div class="ui-g-3">
+			    		<p:commandButton action="#{mesaBean.insereMesa()}" value="Cadastrar" styleClass="ui-priority-primary" update="message, formTable:tabelaMesas, formMesa"/>
+			    	</div>
+			   	</div>
+			</h:form>
+		</div>
+		
+		<div class="ui-g-12">
+			<h:form id="formTable">
+			   	<p:dataTable var="mesa" value="#{mesaBean.selecionaMesas()}" id="tabelaMesas" reflow="true" rows="5" paginator="true">
+					<p:column headerText="Nome" >
+						<h:outputText value="#{mesa.nome}" />
+			   		</p:column>
+			   		
+			   		<p:column headerText="" style="width:32px;" >
+			   			<p:commandButton update=":excluiMesa" oncomplete="PF('excluir').show()" icon="ui-icon-close" title="Excluir">
+			                <f:setPropertyActionListener value="#{mesa}" target="#{mesaBean.selected}" />
+			            </p:commandButton>
+			   		</p:column>
+			   	</p:dataTable>
+		   	</h:form>
+			
+			<!-- Modal de exclusão -->
+			<p:dialog header="Excluir Mesa" widgetVar="excluir" id="excluiMesa" modal="true" width="30%" resizable="false">
+				<h:form>
+					<div class="ui-g">
+						<div class="ui-g-8">
+							<h:outputText value="Deseja excluir mesa #{mesaBean.selected.nome} ?" />		
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-3">
+							<p:commandButton value="Sim" action="#{mesaBean.deletaMesa(mesaBean.selected)}" oncomplete="PF('excluir').hide()" styleClass="ui-priority-primary" update=":formTable:tabelaMesas, :formMesa:message" />		
+						</div>
+						<div class="ui-g-3">
+							<p:commandButton value="Não" oncomplete="PF('excluir').hide()" styleClass="ui-priority-primary" />		
+						</div>
+					</div>
+				</h:form>
+			</p:dialog>
+		</div>
+    </h:body>
+</html>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+
+</h:head>
+
+<h:body>
+
+	<div class="ui-g-12">
+		<h:form>
+			<p:menubar style="margin-top: 0px;" orientation="horizontal">
+				<p:submenu label="Cadastros" icon="ui-icon-user">
+					<p:menuitem action="cliente">Cardápio</p:menuitem>
+				</p:submenu>
+			</p:menubar>
+		</h:form>
+	</div>
+	<div class="ui-g-12">
+		<h3>Cardápio</h3>
+	</div>
+	<div class="ui-g-10">
+		<h:form id="formCardapio">
+			<p:growl id="message" showDetail="true" />
+			<div class="ui-g">
+				<div class="ui-g-2">
+					<p:outputLabel value="Nome: " for="nome" />
+				</div>
+				<div class="ui-g-3">
+					<p:inputText id="nome" value="#{cardapioBean.cardapio.nome}"
+						maxlength="40" />
+				</div>
+			</div>
+
+			<div class="ui-g">
+				<div class="ui-g-2">
+					<p:outputLabel value="Valor: " for="valor" />
+				</div>
+				<div class="ui-g-3">
+					<p:inputText id="valor" value="#{cardapioBean.cardapio.valor}"
+						maxlength="9" />
+				</div>
+			</div>
+			<div class="ui-g">
+				<div class="ui-g-2">
+					<p:outputLabel value="Tipo: " for="tipo" />
+				</div>
+				<div class="ui-g-3">
+					<p:selectOneMenu id="tipo" value="#{cardapioBean.idTipo}">
+						<f:selectItems value="#{cardapioBean.selecionaTiposDeCardapios()}"
+							var="tipo" itemLabel="#{tipo.descricao}"
+							itemValue="#{tipo.idTipo}" />
+					</p:selectOneMenu>
+				</div>
+			</div>
+
+			<div class="ui-g">
+				<div class="ui-g-2"></div>
+				<div class="ui-g-3">
+					<p:commandButton action="#{cardapioBean.insereCardapio()}"
+						value="Cadastrar" styleClass="ui-priority-primary"
+						update="message, formCardapio" />
+				</div>
+			</div>
+		</h:form>
+	</div>
+
+	<div class="ui-g-12">
+		<h:form>
+			<div class="ui-g-4">
+				<p:commandButton update=":editaCardapio" oncomplete="PF('editar').show()" icon="ui-icon-pencil" title="Editar"> 
+				   <f:setPropertyActionListener value="#{cardapio}" target="#{cardapioBean.selectedCardapio}" /> 
+				</p:commandButton> 
+			</div>
+			<p:dataTable value="#{cardapioBean.selecionaCardapios()}" var="cardapio" scrollable="true" scrollHeight="150" selectionMode="single" selection="#{cardapioBean.selectedCardapio}" rowKey="#{cardapio.idCardapio}">
+				<p:ajax event="rowSelect" listener="#{cardapioBean.selecionaProdutosDoCardapio()}" update=":formTable:tabelaProdutos"/>
+				<p:column headerText="Nome">
+					<h:outputText value="#{cardapio.nome}" />
+				</p:column>
+				<p:column headerText="Valor">
+					<h:outputText value="#{cardapio.valor}" />
+				</p:column>
+				<p:column headerText="Tipo">
+					<h:outputText value="#{cardapio.tipo.descricao}" />
+				</p:column>
+				<!-- 	 			   		<p:column headerText="" style="width:32px;" >			   			  -->
+				<!-- 	 				   		<p:commandButton update=":editaCardapio" oncomplete="PF('editar').show()" icon="ui-icon-pencil" title="Editar">  -->
+				<!-- 	 				            <f:setPropertyActionListener value="#{cardapio}" target="#{cardapioBean.selectedCardapio}" />  -->
+				<!-- 	 				        </p:commandButton>  -->
+				<!-- 	 				    </p:column>  -->
+				<!-- 	 				    <p:column headerText="" style="width:32px;" >  -->
+				<!-- 	 			   			<p:commandButton update=":excluiProduto" action="#{produtoBean.selecionaFornecedor(produtoBean.idFornecedor)}" oncomplete="PF('excluir').show()" icon="ui-icon-close" title="Excluir">  -->
+				<!-- 	  			                <f:setPropertyActionListener value="#{produto}" target="#{produtoBean.selected}" />   -->
+				<!-- 	 			            </p:commandButton>  -->
+				<!-- 	- 			   		</p:column> 				 -->
+			</p:dataTable>
+		</h:form>
+	</div>
+
+	<div class="ui-g-12">
+		<h:form id="formTable">
+			<p:dataTable var="cProduto" value="#{cardapioBean.selecionaProdutosDoCardapio()}" id="tabelaProdutos" reflow="true" rows="5" paginator="true">
+				<p:column headerText="Nome">
+					<h:outputText value="#{cProduto.produto.nome}" />
+				</p:column>
+				<p:column headerText="Quantidade">
+					<h:outputText value="#{cProduto.quantidade}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</div>
+</h:body>
+</html>

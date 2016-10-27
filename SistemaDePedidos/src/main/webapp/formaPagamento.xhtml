@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <h:head>
+    
+    </h:head>
+    
+    <h:body>
+    
+    	<div class="ui-g-12">
+    		<h:form>
+	    		<p:menubar style="margin-top: 0px;" orientation="horizontal">
+			    	<p:submenu label="Cadastros" icon="ui-icon-user">
+			    		<p:menuitem action="cliente">Clientes</p:menuitem>
+			    		<p:menuitem action="funcionario">Funcionários</p:menuitem>
+			    		<p:menuitem action="formaPagamento">Forma de Pagamento</p:menuitem>
+			    	</p:submenu>
+	    		</p:menubar>
+    		</h:form>
+    	</div>
+    	<div class="ui-g-12">
+    		<h3>Cadastro de Forma de Pagamento</h3>
+    	</div>
+		<div class="ui-g-10">    	
+		    <h:form id="formForma">
+		    	<p:growl id="message" showDetail="true" />
+		    	<div class="ui-g">
+			   		<div class="ui-g-1">
+			   			<p:outputLabel value="Descrição: " for="descricao"/>
+			   		</div>
+			   		<div class="ui-g-3">
+			    		<p:inputText id="descricao" value="#{formaPagamentoBean.forma.descricao}" maxlength="40"/>
+			   		</div>	
+		    	</div>
+		    	
+		    	<div class="ui-g">
+			   		<div class="ui-g-1">
+			   			<p:outputLabel value="Quantidade: " for="quantidade"/>
+			   		</div>
+			   		<div class="ui-g-3">
+			    		<p:inputText id="quantidade" value="#{formaPagamentoBean.forma.quantidade}" maxlength="40"/>
+			   		</div>	
+		    	</div>
+			 		    	
+			   	<div class="ui-g">
+			    	<div class="ui-g-3">
+			    		<p:commandButton action="#{formaPagamentoBean.insereForma()}" value="Cadastrar" styleClass="ui-priority-primary" update="message"/>
+			    	</div>
+			   	</div>
+			</h:form>
+		</div> 
+		
+		<div class="ui-g-12">
+			<h:form id="formTable">
+			   	<p:dataTable var="forma" value="#{formaPagamentoBean.selecionaFormas()}" id="tabelaFuncionarios" reflow="true" rows="5" paginator="true">
+					<p:column headerText="Descrição" >
+						<h:outputText value="#{forma.descricao}" />
+			   		</p:column>
+				  			
+			   		<p:column headerText="Quantidade">
+			   			<h:outputText value="#{forma.quantidade}" />
+			   		</p:column>
+			   		
+					<p:column headerText="" style="width:32px;" >
+			   			<p:commandButton type="button" onclick="PF('editar').show();" icon="ui-icon-pencil">
+			   				<f:setPropertyActionListener target="#{funcionarioBean}" value="#{forma}" />
+			   			</p:commandButton>
+			   		</p:column>
+			   		<p:column headerText="" style="width:32px;" >
+			   			<p:commandButton type="button" onclick="PF('deletar').show();" icon="ui-icon-close"/>
+			   		</p:column>
+			   		 -->
+			   	</p:dataTable>
+		   	</h:form>
+		</div>
+    </h:body>
+</html>

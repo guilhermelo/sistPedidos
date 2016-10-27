@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <h:head>
+    
+    </h:head>
+    
+    <h:body>
+    
+    	<div class="ui-g-12">
+    		<h:form>
+	    		<p:menubar style="margin-top: 0px;" orientation="horizontal">
+			    	<p:submenu label="Cadastros" icon="ui-icon-user">
+			    		<p:menuitem action="cliente">Clientes</p:menuitem>
+			    	</p:submenu>
+	    		</p:menubar>
+    		</h:form>
+    	</div>
+    	<div class="ui-g-12">
+    		<h3>Cadastro de Funcionários</h3>
+    	</div>
+		<div class="ui-g-10">    	
+		    <h:form id="formFuncionario">
+		    	<p:growl id="message" showDetail="true" />
+		    	<div class="ui-g">
+			   		<div class="ui-g-1">
+			   			<p:outputLabel value="Nome: " for="nome"/>
+			   		</div>
+			   		<div class="ui-g-3">
+			    		<p:inputText id="nome" value="#{funcionarioBean.funcionario.nome}" maxlength="40"/>
+			   		</div>	
+		    	</div>
+			   	
+			   	<div class="ui-g">
+			    	<div class="ui-g-1">
+				    	<p:outputLabel value="CPF: " for="cpf"/>
+				    </div>
+				    <div class="ui-g-3">
+				    	<p:inputText id="cpf" value="#{funcionarioBean.funcionario.cpf}" maxlength="9"/>
+			    	</div>
+			   	</div>
+				   	
+			   	<div class="ui-g">
+			    	<div class="ui-g-1">
+				    	<p:outputLabel value="Idade: " for="idade"/>
+				    </div>
+				    <div class="ui-g-3">
+				    	<p:inputText id="idade" value="#{funcionarioBean.funcionario.idade}"/>
+			    	</div>
+			   	</div>
+				    	
+			   	<div class="ui-g">
+			    	<div class="ui-g-3">
+			    		<p:commandButton action="#{funcionarioBean.insereFuncionario()}" value="Cadastrar" styleClass="ui-priority-primary" update="message, formTable:tabelaFuncionarios, formFuncionario"/>
+			    	</div>
+			   	</div>
+			</h:form>
+		</div>
+		
+		<div class="ui-g-12">
+			<h:form id="formTable">
+			   	<p:dataTable var="funcionario" value="#{funcionarioBean.selecionaFuncionarios()}" id="tabelaFuncionarios" reflow="true" rows="5" paginator="true">
+					<p:column headerText="Nome" >
+						<h:outputText value="#{funcionario.nome}" />
+			   		</p:column>
+				  			
+			   		<p:column headerText="CPF">
+			   			<h:outputText value="#{funcionario.cpf}" />
+			   		</p:column>
+				    			
+			   		<p:column headerText="Idade">
+			   			<h:outputText value="#{funcionario.idade}" />
+			   		</p:column>
+				   			
+			   		<p:column headerText="" style="width:32px;" >			   			
+			   			<p:commandButton update=":editaFuncionario" oncomplete="PF('editar').show()" icon="ui-icon-pencil" title="Editar">
+			                <f:setPropertyActionListener value="#{funcionario}" target="#{funcionarioBean.selected}" />
+		            	</p:commandButton>
+		            </p:column>
+			   		<p:column headerText="" style="width:32px;" >
+			   			<p:commandButton update=":excluiFuncionario" oncomplete="PF('excluir').show()" icon="ui-icon-close" title="Excluir">
+			                <f:setPropertyActionListener value="#{funcionario}" target="#{funcionarioBean.selected}" />
+			            </p:commandButton>
+			   		</p:column>
+			   	</p:dataTable>
+		   	</h:form>
+		   	
+			<!-- Modal de alteração -->
+		   	<p:dialog header="Editar Funcionario" widgetVar="editar" id="editaFuncionario" modal="true" width="30%" resizable="false">
+			    <h:form>
+			    	<div class="ui-g">
+				    	<div class="ui-g-2">
+				    		<p:outputLabel value="Nome: " for="nome" />
+				    	</div>
+				    	<div class="ui-g-3">
+				    		<p:inputText value="#{funcionarioBean.selected.nome}" id="nome"/>
+				    	</div>
+				    </div>
+				    <div class="ui-g">
+				    	<div class="ui-g-2">
+				    		<p:outputLabel value="CPF: " for="cpf"/>
+				    	</div>
+				    	<div class="ui-g-3">
+				    		<p:inputText value="#{funcionarioBean.selected.cpf}" id="cpf" />
+				    	</div>
+			    	</div>
+			    	<div class="ui-g">
+				    	<div class="ui-g-2">
+				    		<p:outputLabel value="Idade: " for="idade"/>
+				    	</div>
+				    	<div class="ui-g-3">
+				    		<p:inputText value="#{funcionarioBean.selected.idade}" id="idade"/>
+				    	</div>
+				    </div>
+			    	<div class="ui-g-3">
+				    	<p:commandButton value="Editar" actionListener="#{funcionarioBean.editaFuncionario(funcionarioBean.selected)}" 
+				    	  oncomplete="PF('editar').hide()" styleClass="ui-priority-primary" update=":formTable:tabelaFuncionarios, :formFuncionario:message" />
+				    </div>			    	
+			    </h:form>
+			</p:dialog>
+			<!-- Fim da modal de alteração -->
+			
+			<!-- Modal de exclusão -->
+			<p:dialog header="Excluir Funcionário" widgetVar="excluir" id="excluiFuncionario" modal="true" width="30%" resizable="false">
+				<h:form>
+					<div class="ui-g">
+						<div class="ui-g-8">
+							<h:outputText value="Deseja excluir funcionario #{funcionarioBean.selected.nome} ?" />		
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-3">
+							<p:commandButton value="Sim" action="#{funcionarioBean.excluirFuncionario(funcionarioBean.selected)}" oncomplete="PF('excluir').hide()" styleClass="ui-priority-primary" update=":formTable:tabelaFuncionarios, :formFuncionario:message" />		
+						</div>
+						<div class="ui-g-3">
+							<p:commandButton value="Não" oncomplete="PF('excluir').hide()" styleClass="ui-priority-primary" />		
+						</div>
+					</div>
+				</h:form>
+			</p:dialog>
+		</div>
+    </h:body>
+</html>
