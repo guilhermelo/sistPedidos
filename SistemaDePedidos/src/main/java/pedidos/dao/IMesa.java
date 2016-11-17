@@ -27,4 +27,10 @@ public interface IMesa {
 	 * @throws SQLException
 	 */
 	public List<MesaVO> selecionaMesas(Connection conn) throws SQLException;
+	
+	/**
+	 * Método para atualizar status da mesa ao fazer pedido e ao fechar conta da mesa
+	 * @throws SQLException
+	 */
+	public void atualizaStatusMesa(Connection conn, Long idMesa) throws SQLException;
 }

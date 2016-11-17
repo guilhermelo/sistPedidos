@@ -38,14 +38,54 @@ public class CardapioDAO implements ICardapio {
 	}
 
 	@Override
-	public void deletarRefeicao(Connection conn, CardapioVO cardapio) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public void deletarCardapio(Connection conn, CardapioVO cardapio) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		
+		query.append(" DELETE FROM CARDAPIO WHERE ID_CARDAPIO = ? AND ID_TIPO = ? ");
+		
+		try{
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			int index = 0;
+			stmt.setLong(++index, cardapio.getIdCardapio());
+			stmt.setLong(++index, cardapio.getTipo().getIdTipo());		
+			
+			stmt.execute();
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
 	}
 
 	@Override
-	public void alterarRefeicao(Connection conn, CardapioVO cardapio) throws SQLException {
-		// TODO Auto-generated method stub
+	public void alterarCardapio(Connection conn, CardapioVO cardapio) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		
+		query.append("UPDATE CARDAPIO SET NOME = ?, VALOR = ?, ID_TIPO = ? WHERE ID_CARDAPIO = ? ");
+		
+		try{
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			int index = 0;
+			stmt.setString(++index, cardapio.getNome());
+			stmt.setBigDecimal(++index, cardapio.getValor());
+			stmt.setLong(++index, cardapio.getTipo().getIdTipo());
+			stmt.setLong(++index, cardapio.getIdCardapio());
+			
+			stmt.executeUpdate();
+			
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
 
 	}
 
@@ -58,7 +98,7 @@ public class CardapioDAO implements ICardapio {
 		List<CardapioVO> cardapios = new ArrayList<CardapioVO>();
 		
 		query.append("SELECT C.ID_CARDAPIO, C.NOME, C.VALOR, C.ID_TIPO, T.DESCRICAO FROM CARDAPIO C ");
-		query.append(" INNER JOIN TIPO_CARDAPIO T ON (T.ID_TIPO = C.ID_TIPO) ");
+		query.append(" INNER JOIN TIPO_CARDAPIO T ON (T.ID_TIPO = C.ID_TIPO) ORDER BY C.NOME");
 		
 		
 		try{

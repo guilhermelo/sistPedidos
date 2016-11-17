@@ -17,8 +17,29 @@ public class CardapioProdutoDAO implements ICardapioProduto{
 
 	@Override
 	public void insereProdutoCardapio(Connection conn, CardapioProdutoVO cProduto) throws SQLException {
-		// TODO Auto-generated method stub
 		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		query.append("INSERT INTO CARDAPIO_PRODUTO (ID_CARDAPIO, ID_PRODUTO, QUANTIDADE) VALUES (?, ?, ?) ");
+		
+		try{
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			int index = 0;
+			
+			stmt.setLong(++index, cProduto.getCardapio().getIdCardapio());
+			stmt.setLong(++index, cProduto.getProduto().getIdProduto());
+			stmt.setLong(++index, cProduto.getQuantidade());
+			
+			stmt.execute();
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -29,10 +50,10 @@ public class CardapioProdutoDAO implements ICardapioProduto{
 		ResultSet rs = null;
 		StringBuilder query = new StringBuilder();
 		ProdutoVO produto = null;
-		CardapioVO cardapio = null;
 		CardapioProdutoVO cProduto = null;
+		CardapioVO cardapio = null;
 		
-		query.append(" SELECT CP.ID_CARDAPIO, CP.ID_PRODUTO, P.NOME, C.VALOR  FROM CARDAPIO C ");  
+		query.append(" SELECT CP.ID_CARDAPIO, CP.ID_PRODUTO, P.NOME, CP.QUANTIDADE  FROM CARDAPIO C ");  
 		query.append(" INNER JOIN CARDAPIO_PRODUTO CP ON(CP.ID_CARDAPIO = C.ID_CARDAPIO) ");
 		query.append(" INNER JOIN  PRODUTO P ON(CP.ID_PRODUTO = P.ID_PRODUTO) WHERE CP.ID_CARDAPIO = ? ");
 		
@@ -49,9 +70,15 @@ public class CardapioProdutoDAO implements ICardapioProduto{
 				produto = new ProdutoVO();
 				
 				if(rs.getLong("ID_CARDAPIO") != 0L){
-					produto.setIdProduto(rs.getLong("ID_CARDAPIO"));
+					cardapio.setIdCardapio(rs.getLong("ID_CARDAPIO"));
 				}else{
-					produto.setIdProduto(null);
+					cardapio.setIdCardapio(null);
+				}
+				
+				if(rs.getLong("QUANTIDADE") != 0L){
+					cProduto.setQuantidade(rs.getLong("QUANTIDADE"));
+				}else{
+					cProduto.setQuantidade(null);
 				}
 				
 				if(rs.getLong("ID_PRODUTO") != 0L){
@@ -66,11 +93,7 @@ public class CardapioProdutoDAO implements ICardapioProduto{
 					produto.setNome(null);
 				}
 				
-				if(rs.getBigDecimal("VALOR") != BigDecimal.ZERO){
-					produto.setValor(rs.getBigDecimal("VALOR"));
-				}else{
-					produto.setValor(null);
-				}
+				
 				
 				cProduto.setCardapio(cardapio);
 				cProduto.setProduto(produto);
@@ -85,6 +108,64 @@ public class CardapioProdutoDAO implements ICardapioProduto{
 		}
 		
 		return cardapios;
+	}
+
+	@Override
+	public void editaProdutoCardapio(Connection conn, CardapioProdutoVO cProduto) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		
+		query.append("UPDATE CARDAPIO_PRODUTO SET QUANTIDADE = ? WHERE ID_PRODUTO = ? AND ID_CARDAPIO = ? ");
+		
+		try{
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			int index = 0;
+			stmt.setLong(++index, cProduto.getQuantidade());
+			stmt.setLong(++index, cProduto.getProduto().getIdProduto());
+			stmt.setLong(++index, cProduto.getCardapio().getIdCardapio());
+			
+			stmt.execute();
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public Boolean existeCardapioProduto(Connection conn, Long idCardapio, Long idProduto) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Long result = 0L;
+		
+		query.append(" SELECT ID_CARDAPIO FROM CARDAPIO_PRODUTO WHERE ID_CARDAPIO = ? AND ID_PRODUTO = ? ");
+		
+		try{
+			
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			stmt.setLong(1, idCardapio);
+			stmt.setLong(2, idProduto);
+			
+			rs = stmt.executeQuery();
+			
+			if(rs.next()){
+				if(rs.getLong("ID_CARDAPIO") != 0L){
+					return true; 
+				}
+			}
+			
+			return false;
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}	
 	}
 
 }

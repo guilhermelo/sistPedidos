@@ -71,14 +71,10 @@
 	</div>
 
 	<div class="ui-g-12">
-		<h:form>
-			<div class="ui-g-4">
-				<p:commandButton update=":editaCardapio" oncomplete="PF('editar').show()" icon="ui-icon-pencil" title="Editar"> 
-				   <f:setPropertyActionListener value="#{cardapio}" target="#{cardapioBean.selectedCardapio}" /> 
-				</p:commandButton> 
-			</div>
-			<p:dataTable value="#{cardapioBean.selecionaCardapios()}" var="cardapio" scrollable="true" scrollHeight="150" selectionMode="single" selection="#{cardapioBean.selectedCardapio}" rowKey="#{cardapio.idCardapio}">
-				<p:ajax event="rowSelect" listener="#{cardapioBean.selecionaProdutosDoCardapio()}" update=":formTable:tabelaProdutos"/>
+		<h:form id="formTabCardapio">
+			<p:dataTable value="#{cardapioBean.selecionaCardapios()}" id="tabelaCardapio" var="cardapio" scrollable="true"
+				scrollHeight="150" selectionMode="single" selection="#{cardapioBean.selectedCardapio}" rowKey="#{cardapio.idCardapio}">
+				<p:ajax event="rowSelect" listener="#{cardapioBean.selecionaProdutosDoCardapio()}" update=":formTable:tabelaProdutos" />
 				<p:column headerText="Nome">
 					<h:outputText value="#{cardapio.nome}" />
 				</p:column>
@@ -88,31 +84,246 @@
 				<p:column headerText="Tipo">
 					<h:outputText value="#{cardapio.tipo.descricao}" />
 				</p:column>
-				<!-- 	 			   		<p:column headerText="" style="width:32px;" >			   			  -->
-				<!-- 	 				   		<p:commandButton update=":editaCardapio" oncomplete="PF('editar').show()" icon="ui-icon-pencil" title="Editar">  -->
-				<!-- 	 				            <f:setPropertyActionListener value="#{cardapio}" target="#{cardapioBean.selectedCardapio}" />  -->
-				<!-- 	 				        </p:commandButton>  -->
-				<!-- 	 				    </p:column>  -->
-				<!-- 	 				    <p:column headerText="" style="width:32px;" >  -->
-				<!-- 	 			   			<p:commandButton update=":excluiProduto" action="#{produtoBean.selecionaFornecedor(produtoBean.idFornecedor)}" oncomplete="PF('excluir').show()" icon="ui-icon-close" title="Excluir">  -->
-				<!-- 	  			                <f:setPropertyActionListener value="#{produto}" target="#{produtoBean.selected}" />   -->
-				<!-- 	 			            </p:commandButton>  -->
-				<!-- 	- 			   		</p:column> 				 -->
+				<p:column headerText="" style="width:32px;">
+					<p:commandButton update=":editaCardapio"
+						oncomplete="PF('editarCardapio').show()" icon="ui-icon-pencil"
+						title="Editar">
+						<f:setPropertyActionListener value="#{cardapio}"
+							target="#{cardapioBean.selectedCardapio}" />
+					</p:commandButton>
+				</p:column>
+				<p:column headerText="" style="width:32px;">
+					<p:commandButton update=":excluiCardapio"
+						action="#{cardapioBean.selecionaTipo(cardapioBean.selectedCardapio.tipo.idTipo)}"
+						oncomplete="PF('excluir').show()" icon="ui-icon-close"
+						title="Excluir">
+						<f:setPropertyActionListener value="#{cardapio}"
+							target="#{cardapioBean.selectedCardapio}" />
+					</p:commandButton>
+				</p:column>
 			</p:dataTable>
 		</h:form>
+
+		<!-- Modal de exclusão -->
+		<p:dialog header="Excluir Cardápio" widgetVar="excluir"
+			id="excluiCardapio" modal="true" width="30%" resizable="false">
+			<h:form>
+				<div class="ui-g">
+					<div class="ui-g-8">
+						<h:outputText
+							value="Deseja excluir cardápio #{cardapioBean.selectedCardapio.nome} ?" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton value="Sim"
+							action="#{cardapioBean.deletaCardapio(cardapioBean.selectedCardapio)}"
+							oncomplete="PF('excluir').hide()"
+							styleClass="ui-priority-primary"
+							update=":formTabCardapio:tabelaCardapio, :formCardapio:message" />
+					</div>
+					<div class="ui-g-3">
+						<p:commandButton value="Não" oncomplete="PF('excluir').hide()"
+							styleClass="ui-priority-primary" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- Modal de edição -->
+		<p:dialog header="Editar Cardápio" widgetVar="editarCardapio"
+			id="editaCardapio" modal="true" width="30%" resizable="false">
+			<h:form>
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Nome: " for="nome" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText id="nome"
+							value="#{cardapioBean.selectedCardapio.nome}" maxlength="40" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Valor: " for="valor" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText id="valor"
+							value="#{cardapioBean.selectedCardapio.valor}" maxlength="9" />
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Tipo: " for="tipo" />
+					</div>
+					<div class="ui-g-3">
+						<p:selectOneMenu id="tipo"
+							value="#{cardapioBean.selectedCardapio.tipo.idTipo}">
+							<f:selectItem
+								itemLabel="#{cardapioBean.selectedCardapio.tipo.descricao}"
+								itemValue="#{cardapioBean.selectedCardapio.tipo.idTipo}" />
+							<f:selectItems
+								value="#{cardapioBean.selecionaTiposDeCardapios()}" var="tipo"
+								itemLabel="#{tipo.descricao}" itemValue="#{tipo.idTipo}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-2"></div>
+					<div class="ui-g-3">
+						<p:commandButton
+							action="#{cardapioBean.editarCardapio(cardapioBean.selectedCardapio)}"
+							oncomplete="PF('editarCardapio').hide()" value="Editar"
+							styleClass="ui-priority-primary"
+							update="formCardapio:message, formCardapio, formTabCardapio:tabelaCardapio" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
 	</div>
 
+	<br />
+	<br />
+	<br />
+	<div class="ui-g-4">
+		<h:form>
+			<p:commandButton update=":insereProduto" oncomplete="PF('insereProduto').show()" value="Inserir produto" styleClass="ui-priority-primary" action="c">
+				<f:setPropertyActionListener value="#{cardapio}" target="#{cardapioBean.selectedCardapio}"/>
+			</p:commandButton>
+		</h:form>
+	</div>
 	<div class="ui-g-12">
 		<h:form id="formTable">
-			<p:dataTable var="cProduto" value="#{cardapioBean.selecionaProdutosDoCardapio()}" id="tabelaProdutos" reflow="true" rows="5" paginator="true">
+			<p:dataTable var="cProduto" value="#{cardapioBean.selecionaProdutosDoCardapio()}" id="tabelaProdutos" reflow="true"
+				emptyMessage="Nenhum produto cadastrado">
 				<p:column headerText="Nome">
 					<h:outputText value="#{cProduto.produto.nome}" />
 				</p:column>
 				<p:column headerText="Quantidade">
 					<h:outputText value="#{cProduto.quantidade}" />
 				</p:column>
+				<p:column headerText="" style="width:32px;">
+					<p:commandButton update="editaProdForm" oncomplete="PF('editarProduto').show()" icon="ui-icon-pencil" title="Editar">
+						<f:setPropertyActionListener value="#{cProduto}" target="#{cardapioBean.selectCProduto}" />
+					</p:commandButton>
+				</p:column>
 			</p:dataTable>
 		</h:form>
+
+		<!-- Editar produtos -->
+		<p:dialog header="Editar Produto" widgetVar="editarProduto" id="editaProduto" modal="true" width="40%" resizable="false">
+			<h:form id="editaProdForm">
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Quantidade: " for="quantidade" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText value="#{cardapioBean.selectCProduto.quantidade}" id="quantidade"></p:inputText>
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton
+							action="#{cardapioBean.editaProduto(cardapioBean.selectCProduto)}"
+							oncomplete="PF('editarProduto').hide()" value="Editar"
+							styleClass="ui-priority-primary"
+							update=":formTable:tabelaProdutos, :formCardapio:message" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- Modal de exclusão de produto -->
+		<p:dialog header="Excluir Produto" widgetVar="excluirProduto"
+			id="excluiProduto" modal="true" width="30%" resizable="false">
+			<h:form>
+				<div class="ui-g">
+					<div class="ui-g-8">
+						<h:outputText value="Deseja excluir produto ?" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton value="Sim"
+							oncomplete="PF('excluirProduto').hide()"
+							styleClass="ui-priority-primary" />
+					</div>
+					<div class="ui-g-3">
+						<p:commandButton value="Não"
+							oncomplete="PF('excluirProduto').hide()"
+							styleClass="ui-priority-primary" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="Inserir Produto" id="insereProduto" modal="true" widgetVar="insereProduto" width="40%" resizable="false">
+
+			<h:form id="formInsereProduto">
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Cardápio: " for="cardapio"/>
+					</div>
+					<div class="ui-g-3">
+						<p:inputText value="#{cardapioBean.selectCProduto.cardapio.idCardapio}" id="cardapio" disabled="true"/>
+					</div>
+				</div>
+				
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Produto: " for="produto" />
+					</div>
+					<div class="ui-g-2" style="width: 185px;">
+						<p:inputText value="#{cardapioBean.selectCProduto.produto.nome}" id="produto" />
+					</div>
+					<div class="ui-g-2">
+						<p:commandButton icon="ui-icon-search" oncomplete="PF('produtosDisponiveis').show()" update=":produtosCardapio">
+							<f:setPropertyActionListener target="#{cardapioBean.selectedCardapio}" value="#{teste}" />
+						</p:commandButton>
+					</div>
+				</div>
+				
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Quantidade: " for="quantidade" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText value="#{cardapioBean.selectCProduto.quantidade}" id="quantidade" />
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton
+							action="#{cardapioBean.inserirProduto()}"
+							oncomplete="PF('insereProduto').hide()" value="Inserir"
+							styleClass="ui-priority-primary"
+							update=":formTable:tabelaProdutos, :formCardapio:message" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Produtos" widgetVar="produtosDisponiveis" id="produtosCardapio" modal="true" width="30%">
+			<h:form>
+				<div class="ui-g">
+					<p:dataTable value="#{produtoBean.selecionaProdutos()}" var="produto" scrollable="true" scrollHeight="150" selectionMode="single" 
+								selection="#{cardapioBean.selectedProduto}" rowKey="#{produto.idProduto}">
+					<p:ajax event="rowDblselect" oncomplete="PF('produtosDisponiveis').hide()" listener="#{cardapioBean.ajustaCampos()}" update="formInsereProduto"/>
+						<p:column headerText="Código">
+							<h:outputText value="#{produto.idProduto}" />
+						</p:column>
+						<p:column headerText="Nome">
+							<h:outputText value="#{produto.nome}" />
+						</p:column>
+						
+					</p:dataTable>
+				</div>
+			</h:form>
+		</p:dialog>
 	</div>
 </h:body>
 </html>

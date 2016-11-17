@@ -152,4 +152,48 @@ public class ProdutoDAO implements IProduto{
 		return null;
 	}
 
+	@Override
+	public ProdutoVO selecionaProduto(Connection conn, Long idProduto) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ProdutoVO produto = null;
+		
+		query.append("SELECT ID_PRODUTO, NOME FROM PRODUTO WHERE ID_PRODUTO = ?");
+		
+		try{
+			
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			stmt.setLong(1, idProduto);
+			
+			rs = stmt.executeQuery();
+			
+			if(rs.next()){
+				
+				produto = new ProdutoVO();
+				
+				if(rs.getLong("ID_PRODUTO") != 0L){
+					produto.setIdProduto(rs.getLong("ID_PRODUTO"));
+				}else{
+					produto.setIdProduto(null);
+				}
+				
+				if(rs.getString("NOME") == null || "".equals(rs.getString("NOME"))){
+					produto.setNome(null);
+				}else{
+					produto.setNome(rs.getString("NOME"));
+				}
+			}
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
+		
+		return produto;
+	}
+
 }

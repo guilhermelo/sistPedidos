@@ -39,4 +39,13 @@ public interface ITipoCardapio {
 	 * @throws SQLException
 	 */
 	public List<TipoCardapioVO> selecionaTipos(Connection conn) throws SQLException;
+	
+	/**
+	 * Método para selecionar tipo de cardápio
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public TipoCardapioVO selecionaTipo(Connection conn, Long idTipo) throws SQLException;
+	
 }

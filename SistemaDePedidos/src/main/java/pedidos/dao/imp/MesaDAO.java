@@ -106,5 +106,29 @@ public class MesaDAO implements IMesa{
 		}
 
 	}
+
+	@Override
+	public void atualizaStatusMesa(Connection conn, Long idMesa) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+	
+		query.append("UPDATE MESA SET MESA_STATUS = ? WHERE ID_MESA = ?");
+		
+		try{	
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		
+			stmt.setString(1, "O");
+			stmt.setLong(2, idMesa);
+			
+			stmt.executeUpdate();
+			
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
+		
+	}
 	
 }

@@ -23,4 +23,12 @@ public interface IProduto {
 	 * @throws SQLException
 	 */
 	public List<ProdutoVO> selecionaProdutosPorTipo(Connection conn, Long idTipo) throws SQLException;
+	
+	/**
+	 * Método responsávle por retornar produto através do id
+	 * @param idProduto
+	 * @return
+	 * @throws SQLException
+	 */
+	public ProdutoVO selecionaProduto(Connection conn, Long idProduto) throws SQLException;
 }

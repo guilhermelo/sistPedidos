@@ -1,48 +1,197 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://java.sun.com/jsf/facelets">
-    
-    <h:head>
-    
-    </h:head>
-    
-    <h:body>
-    	<div class="ui-g">
-			<div class="ui-g-12">
-				<div class="ui-g-3" style="height: 80%;">
-					<h:form>
-						<p:slideMenu>
-							<p:submenu label="Cadastros" style="height: 400px;">
-								<p:menuitem value="Cliente" action="cliente"/>
-								<p:menuitem value="Funcionario" action="funcionario"/>
-							</p:submenu>
-						</p:slideMenu>
-					</h:form>
-				</div>
-				<div class="ui-g-9">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+
+</h:head>
+
+<h:body>
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<div class="ui-g-3" style="height: 80%;">
+				<h:form>
+					<p:slideMenu backLabel="Voltar">
+						<p:submenu label="Cadastros" style="height: 400px;">
+							<p:menuitem value="Cliente" action="cliente" />
+							<p:menuitem value="Funcionario" action="funcionario" />
+						</p:submenu>
+					</p:slideMenu>
+				</h:form>
+			</div>
+			<div class="ui-g-9">
 					<div class="ui-g">
 						<div class="ui-g-3">
-		    				<h3  style="font-size: 40px; padding: 0px; margin: 0; color: #39393c; font-family: 'Oswald', sans-serif; ">Mesas</h3>
-			    		</div>
-			    		<div class="ui-g-3">
-							<p:commandButton value="Adicionar mesa"/>
+							<h3
+								style="font-size: 40px; padding: 0px; margin: 0; color: #39393c; font-family: 'Oswald', sans-serif;">Mesas</h3>
 						</div>
 					</div>
-					
-				    <p:accordionPanel value="#{dashboardBean.selecionaMesas()}" var="mesa">
-				        <p:tab title="#{mesa.nome}" titleStyle="#{dashboardBean.verificaStatus(mesa)}">
-				            <h:panelGrid columns="2" cellpadding="5">                   
-				                <h:outputText value="Status:" style="font-weight: bold" />
-				                <h:outputText value="#{mesa.mesaStatus}" />
-				            </h:panelGrid>
-				        </p:tab>
-				    </p:accordionPanel>
-		    	</div>
-	    	</div>
-    	</div>
-    </h:body>
+
+					<p:accordionPanel value="#{dashboardBean.selecionaMesas()}" var="mesa" id="mesas">
+						<p:tab title="#{mesa.nome}"
+							titleStyle="#{dashboardBean.verificaStatus(mesa)}">
+							<h:panelGrid columns="2" cellpadding="5">
+								<p:commandButton update=":formPedido:inserePedido" oncomplete="PF('realizaPedido').show()" value="Realizar Pedido"
+									styleClass="ui-priority-primary" actionListener="#{dashboardBean.capturaId(mesa)}" />
+								
+								<p:commandButton update=":formPedidosMesa" oncomplete="PF('pedidosDaMesa').show()" actionListener="#{dashboardBean.capturaId(mesa)}" 
+									value="Ver pedidos"/>
+							</h:panelGrid>
+						</p:tab>
+						
+					</p:accordionPanel>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<h:form id="formPedidosMesa">
+			<p:dialog header="Pedidos Realizados" widgetVar="pedidosDaMesa" modal="true" width="50%" resizable="false">
+				<p:dataTable value="#{dashboardBean.selecionaPedidosDaMesa()}" id="tabelaPedidos" var="item" scrollable="true" selection="#{dashboardBean.pedidos}" rowKey="#{item.idCardapio}">
+						
+						<p:ajax event="rowSelectCheckbox" update="tabelaPedidos" />
+      					<p:ajax event="rowUnselectCheckbox" update="tabelaPedidos" />
+      					<p:ajax event="rowSelect" update="tabelaPedidos" />
+      					<p:ajax event="rowUnselect" update="tabelaPedidos" />
+      					<p:ajax event="toggleSelect" update="tabelaPedidos" />
+						<p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+						<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}" />
+						</p:column>
+						<p:column headerText="Valor">
+							<h:outputText value="#{item.valor}" />
+						</p:column>
+						<p:column headerText="Quantidade">
+							<h:outputText value="#{item.quantidade}" />
+						</p:column>
+				</p:dataTable>
+				<br/>
+				<br/>
+				<p:commandButton oncomplete="PF('finalizaConta').show()" value="Fechar Conta">
+					<p:ajax listener="#{dashboardBean.defineValor()}" update=":formConta:fechaConta"/>				
+				</p:commandButton>
+
+			</p:dialog>
+		</h:form>
+		
+		<h:form id="formConta">
+			<p:growl id="message" showDetail="true"/>
+			<p:dialog header="Fechar Conta" widgetVar="finalizaConta" id="fechaConta" modal="true" width="50%" resizable="false">
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<h:outputText value="Valor: " />
+						<p:inputNumber value="#{dashboardBean.conta.valorConta}" disabled="true"/>
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton action="#{dashboardBean.fechaConta()}" update="message" oncomplete="PF('finalizaConta').hide()" /> 
+					</div>
+				</div>
+			</p:dialog>
+		</h:form>
+	</div>
+
+
+	<div class="ui-g-12">
+		
+		<h:form id="formPedido">
+			<p:growl id="message" showDetail="true" />
+			<p:dialog header="Realizar Pedido" id="inserePedido" modal="true" widgetVar="realizaPedido" width="60%" resizable="false">
+
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Funcionário:  " for="funcionario" />
+					</div>
+					<div class="ui-g-3">
+						<p:selectOneMenu id="funcionario"
+							value="#{dashboardBean.idFuncionario}">
+							<f:selectItems value="#{funcionarioBean.selecionaFuncionarios()}"
+								var="funcionario" itemLabel="#{funcionario.nome}"
+								itemValue="#{funcionario.idFuncionario}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Cliente:  " for="cliente" />
+					</div>
+					<div class="ui-g-3">
+						<p:selectOneMenu id="cliente" value="#{dashboardBean.idCliente}">
+							<f:selectItems value="#{clienteBean.selecionaClientes()}" var="c"
+								itemLabel="#{c.nome}" itemValue="#{c.idCliente}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="ui-g-3">
+						<p:commandLink value="Cadastrar Cliente" update="insereCliente"
+							actionListener="#{dashboardBean.esvaziaCliente()}"
+							oncomplete="PF('insereCliente').show()">
+							<f:setPropertyActionListener value="#{cliente}"
+								target="#{dashboardBean.cliente}" />
+						</p:commandLink>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-2">
+						<p:outputLabel value="Observação:  " for="observacao" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText value="#{dashboardBean.pedido.observacao}"
+							id="observacao" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+						<h3>Cardápio:</h3>
+						<p:dataTable value="#{dashboardBean.selecionaCardapios()}" id="tabelaCardapio" var="cardapio" scrollable="true"
+							scrollHeight="150" selection="#{dashboardBean.cardapios}" rowKey="#{cardapio.idCardapio}">
+							<p:column selectionMode="multiple" style="width:16px;text-align:center"></p:column>
+							<p:column headerText="Nome">
+								<h:outputText value="#{cardapio.nome}" />
+							</p:column>
+							<p:column headerText="Valor">
+								<h:outputText value="#{cardapio.valor}" />
+							</p:column>
+							<p:column headerText="Tipo">
+								<h:outputText value="#{cardapio.tipo.descricao}" />
+							</p:column>
+						</p:dataTable>
+				</div>
+				<br/>
+				<br/>
+				<p:commandButton action="#{dashboardBean.inserePedido()}" value="Salvar" oncomplete="PF('realizaPedido').hide();" 
+						styleClass="ui-priority-primary" update="message, :mesas"/>
+			</p:dialog>
+		</h:form>
+
+		<p:dialog header="Cadastrar Cliente" id="insereCliente" modal="true"
+			widgetVar="insereCliente" width="40%" resizable="false">
+			<h:form>
+				<div class="ui-g">
+					<div class="ui-g-1">
+						<p:outputLabel value="Nome: " for="nome" />
+					</div>
+					<div class="ui-g-3">
+						<p:inputText id="nome" value="#{dashboardBean.cliente.nome}"
+							maxlength="40" />
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-3">
+						<p:commandButton action="#{dashboardBean.insereClienteRapido()}"
+							update=":formPedido" oncomplete="PF('insereCliente').hide()"
+							value="Cadastrar" styleClass="ui-priority-primary">
+						</p:commandButton>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+	</div>
+</h:body>
 </html>

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,12 @@ public class ClienteDAO implements ICliente{
 			stmt.setString(++index, cliente.getTelefone());
 			stmt.setString(++index, cliente.getBairro());
 			stmt.setString(++index, cliente.getRua());
-			stmt.setLong(++index, cliente.getNumero());
+			if(cliente.getNumero() == null){
+				stmt.setLong(++index, Types.NUMERIC);
+			}else{
+				stmt.setLong(++index, cliente.getNumero());
+			}
+			
 			
 			stmt.execute();
 			

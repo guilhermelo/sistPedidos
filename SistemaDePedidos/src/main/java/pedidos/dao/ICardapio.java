@@ -22,7 +22,7 @@ public interface ICardapio {
 	 * @param cardapio
 	 * @throws SQLException
 	 */
-	public void deletarRefeicao(Connection conn, CardapioVO cardapio) throws SQLException;
+	public void deletarCardapio(Connection conn, CardapioVO cardapio) throws SQLException;
 	
 	/**
 	 * Método responsável por alterar dados da cardapio
@@ -30,7 +30,7 @@ public interface ICardapio {
 	 * @param cardapio
 	 * @throws SQLException
 	 */
-	public void alterarRefeicao(Connection conn, CardapioVO cardapio) throws SQLException;
+	public void alterarCardapio(Connection conn, CardapioVO cardapio) throws SQLException;
 	
 	/**
 	 * Método responsável por selecionar cardapios

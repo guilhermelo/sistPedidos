@@ -13,7 +13,7 @@ public interface IConta {
 	 * @param conta
 	 * @throws SQLException
 	 */
-	public void insereConta(Connection conn, ContaVO conta) throws SQLException;
+	public void insereConta(Connection conn, List<ContaVO> contas) throws SQLException;
 	
 	/**
 	 * Método responsável por alterar conta
@@ -23,11 +23,12 @@ public interface IConta {
 	public void alteraconta(Connection conn, ContaVO conta) throws SQLException;
 	
 	/**
-	 * Método responsável por deletar conta
-	 * @param vo
+	 * Método responsável por capturar novo id da sequence "id_conta"
+	 * @param conn
+	 * @return
 	 * @throws SQLException
 	 */
-	public void deletaConta(Connection conn, ContaVO conta) throws SQLException;
+	public Long capturaIdConta(Connection conn) throws SQLException;
 	
 	/**
 	 * Método responsável por selecionar contas abertas

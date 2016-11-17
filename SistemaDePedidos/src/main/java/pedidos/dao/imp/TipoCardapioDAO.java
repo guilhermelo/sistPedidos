@@ -72,4 +72,46 @@ public class TipoCardapioDAO implements ITipoCardapio{
 		}
 	}
 
+	@Override
+	public TipoCardapioVO selecionaTipo(Connection conn, Long idTipo) throws SQLException {
+		
+		StringBuilder query = new StringBuilder();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		TipoCardapioVO tipo = null;
+		
+		query.append("SELECT ID_TIPO, DESCRICAO FROM TIPO_CARDAPIO WHERE ID_TIPO = ?");
+		
+		try{
+			stmt = conn.prepareStatement(query.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			
+			stmt.setLong(1, idTipo);
+			rs = stmt.executeQuery();
+			
+			
+			if(rs.next()){
+				tipo = new TipoCardapioVO();
+				
+				if(rs.getLong("ID_TIPO") != 0L){
+					tipo.setIdTipo(rs.getLong("ID_TIPO"));
+				}else{
+					tipo.setIdTipo(null);
+				}
+				
+				if(rs.getString("DESCRICAO") != null && !"".contentEquals(rs.getString("DESCRICAO"))){
+					tipo.setDescricao(rs.getString("DESCRICAO"));
+				}else{
+					tipo.setDescricao(null);
+				}
+				
+			}
+			
+			return tipo;
+		}catch(RuntimeException e){
+			throw new SQLException("Erro de runtime: " + e.getMessage());
+		}catch(Exception e){
+			throw new SQLException("Erro: " + e.getMessage());
+		}
+	}
+
 }
